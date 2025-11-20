@@ -156,9 +156,13 @@ const objets = [
         
         function startBattle() {
             // A. Tirage au sort
-            const randomChar = personnages[Math.floor(Math.random() * personnages.length)];
-            const randomPlace = lieux[Math.floor(Math.random() * lieux.length)];
-            const randomObj = objets[Math.floor(Math.random() * objets.length)];
+            // Ancienne version : const randomChar = personnages[Math.floor(Math.random() * personnages.length)];
+            // Nouvelle version (garde l'objet complet) :
+            const selectedChar = personnages[Math.floor(Math.random() * personnages.length)];
+            const selectedPlace = lieux[Math.floor(Math.random() * lieux.length)];
+            const selectedObj = objets[Math.floor(Math.random() * objets.length)];
+            
+            // ... Le reste du code ci-dessous sera mis à jour ...
 
             // Affichage avec petit effet d'animation simple (changement de texte)
             document.getElementById('char-display').innerText = randomChar;
