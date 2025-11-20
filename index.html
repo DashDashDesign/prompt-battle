@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Battle Generator</title>
+    <style>
+        /* Style général sombre pour l'événement */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 { font-size: 3rem; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 10px; color: #00d2ff; }
+
+        /* Le Minuteur */
+        #timer {
+            font-size: 6rem;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+            color: #ff4757;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
+        }
+
+        /* La zone des cartes */
+        .cards-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: #2d3436;
+            border: 2px solid #444;
+            border-radius: 15px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+
+        .card h2 { color: #aaa; font-size: 1.2rem; text-transform: uppercase; margin-top: 0; }
+        .card .content { font-size: 2rem; font-weight: bold; color: #fff; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+
+        /* Contrôles */
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: #333;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        button {
+            background-color: #00d2ff;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #34e7e4; }
+        
+        input[type="number"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            width: 60px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        label { font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+    <h1>Prompt Battle</h1>
+
+    <div id="timer">05:00</div>
+
+    <div class="cards-container">
+        <div class="card">
+            <h2>Personnage</h2>
+            <div class="content" id="char-display">?</div>
+        </div>
+
+        <div class="card">
+            <h2>Lieu</h2>
+            <div class="content" id="place-display">?</div>
+        </div>
+
+        <div class="card">
+            <h2>Objet / Style</h2>
+            <div class="content" id="obj-display">?</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <label for="minutes">Durée (min):</label>
+        <input type="number" id="minutes" value="5" min="1" max="60">
+        <button onclick="startBattle()">LANCER LA MANCHE</button>
+    </div>
+
+    <script>
+        // --- 1. DONNÉES (C'est ici que tu modifies tes listes) ---
+        
+        const personnages = [
+            "Un Astronaute dépressif",
+            "Une grand-mère hacker",
+            "Un chat samouraï",
+            "Un robot jardinier",
+            "Le Roi Arthur",
+            "Une licorne punk",
+            "Un détective privé noir & blanc"
+        ];
+
+        const lieux = [
+            "Une station spatiale abandonnée",
+            "Une boulangerie sous-marine",
+            "Le sommet de la Tour Eiffel",
+            "Une forêt de cristaux",
+            "Un supermarché post-apocalyptique",
+            "L'intérieur d'un volcan",
+            "Une bibliothèque infinie"
+        ];
+
+        const objets = [
+            "Une banane géante",
+            "Un sabre laser en bois",
+            "Style Cyberpunk",
+            "Style Peinture à l'huile",
+            "Une machine à remonter le temps",
+            "Un grille-pain volant",
+            "Style Anime années 90"
+        ];
+
+        // --- 2. LOGIQUE DU TIMER ET TIRAGE ---
+
+        let countdown;
+        
+        function startBattle() {
+            // A. Tirage au sort
+            const randomChar = personnages[Math.floor(Math.random() * personnages.length)];
+            const randomPlace = lieux[Math.floor(Math.random() * lieux.length)];
+            const randomObj = objets[Math.floor(Math.random() * objets.length)];
+
+            // Affichage avec petit effet d'animation simple (changement de texte)
+            document.getElementById('char-display').innerText = randomChar;
+            document.getElementById('place-display').innerText = randomPlace;
+            document.getElementById('obj-display').innerText = randomObj;
+
+            // B. Gestion du Timer
+            clearInterval(countdown); // Arrête le timer précédent s'il y en a un
+            
+            const minutesInput = document.getElementById('minutes').value;
+            let time = minutesInput * 60;
+            
+            const timerElement = document.getElementById('timer');
+            
+            // Mise à jour immédiate
+            updateTimerDisplay(time, timerElement);
+
+            countdown = setInterval(() => {
+                time--;
+                updateTimerDisplay(time, timerElement);
+
+                if (time <= 0) {
+                    clearInterval(countdown);
+                    timerElement.innerText = "TERMINÉ !";
+                    // Optionnel : Jouer un son ici
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(seconds, element) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            element.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+    </script>
+</body>
+</html>
